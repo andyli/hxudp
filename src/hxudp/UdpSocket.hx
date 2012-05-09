@@ -1,7 +1,12 @@
 package hxudp;
 
 import haxe.io.Bytes;
+
+#if cpp
 import cpp.Lib;
+#elseif neko
+import neko.Lib;
+#end
 
 /**
  * UDP Socket Client (sending):

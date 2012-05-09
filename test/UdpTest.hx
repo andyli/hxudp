@@ -1,7 +1,14 @@
 package ;
 
+#if cpp
 import cpp.vm.Thread;
 import cpp.vm.Lock;
+#elseif neko
+import neko.vm.Thread;
+import neko.vm.Lock;
+#end
+
+
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import hxudp.UdpSocket;
