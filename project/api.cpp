@@ -1,6 +1,3 @@
-#define IMPLEMENT_API
-#include <hx/CFFI.h>
-
 /*
  * Following is largely based on ofxUDPManager of ofxNetwork.
  * ofxNetwork is an addon of openframeworks(http://www.openframeworks.cc/)
@@ -40,6 +37,11 @@
 	#define FAR
 
 #else
+
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#endif
+	
 	//windows includes
 	#include <winsock2.h>
 	#include <ws2tcpip.h>		// TCP/IP annex needed for multicasting
@@ -727,6 +729,9 @@ return(getsockname(m_hSocket, (sockaddr *)pInetAddr, &iSize) !=	SOCKET_ERROR);
 /*
  * ndll stuff
  */
+#define IMPLEMENT_API
+#include <hx/CFFI.h>
+ 
 DEFINE_KIND(_UdpSocket);
 
 void delete_UdpSocket(value a) {
