@@ -1,0 +1,6 @@
+-cpp bin
+-main UdpTest
+-cp src
+-cp test
+
+-cmd (cd bin && ./UdpTest)

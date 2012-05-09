@@ -1,0 +1,38 @@
+<xml>
+	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
+	
+	<files id="udp_Files">
+		<file name="api.cpp"/>
+		
+		<compilerflag value = "-D__WIN32__" if="windows"/>
+		<compilerflag value = "-DWIN32" if="windows"/>
+		<compilerflag value = "-DNDEBUG" if="windows"/>
+		<compilerflag value = "-DTARGET_WIN32" if="windows"/>
+
+		<compilerflag value = "-D__MACOSX_CORE__" if="macos"/>
+		<compilerflag value = "-w" if="macos"/>
+		<compilerflag value = "-Wfatal-errors" if="macos"/>
+		<compilerflag value = "-W" if="macos"/>
+		<compilerflag value = "-fexceptions" if="macos"/>
+		
+		<compilerflag value = "-march=native" if="linux"/>
+		<compilerflag value = "-mtune=native" if="linux"/>
+		<compilerflag value = "-finline-functions" if="linux"/>
+		<compilerflag value = "-funroll-all-loops" if="linux"/>
+		<compilerflag value = "-fexceptions" if="linux"/>
+	</files>
+	
+	<target id="hxudp.ndll" tool="linker" toolid="dll" output="hxudp">
+		<files id="udp_Files"/>
+		<ext value=".ndll"/>
+		<outdir name="../ndll/${BINDIR}"/>
+		
+		<lib name="${LIB_LINK}"/>
+		
+		<lib name = 'ws2_32.lib' if="windows" />
+	</target>
+
+	<target id="default">
+		<target id="hxudp.ndll"/>
+	</target>
+</xml>
