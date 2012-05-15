@@ -58,11 +58,11 @@ class UdpTest {
 		//create a lock for knowing when server exit
 		var lock = new Lock();
 
-		var serverThread = Thread.create(server);
+		/*var serverThread = Thread.create(server);
 		serverThread.sendMessage(lock);
 		serverThread.sendMessage(Thread.current());
 		
-		Thread.readMessage(true);
+		Thread.readMessage(true);*/
 
 		var s = new UdpSocket();
 		trace("client create: " + s.create());
@@ -72,10 +72,10 @@ class UdpTest {
 		trace("client sendAll 'testing2': " + s.sendAll(Bytes.ofString("testing2")));
 		trace("client close: " + s.close());
 
-		//wait for server to exit
+		/*/wait for server to exit
 		while (!lock.wait(1)) {
 			trace("waiting...");
-		}
+		}*/
 		trace("server-client test finished");
 	}
 }
