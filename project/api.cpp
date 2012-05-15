@@ -18,6 +18,7 @@
 	#include <fcntl.h>
 	#include <errno.h>
 	#include <unistd.h>
+	#include <string.h>
 	#include <arpa/inet.h>
 	#include <netinet/in.h>
 	#include <sys/types.h>
@@ -727,8 +728,14 @@ return(getsockname(m_hSocket, (sockaddr *)pInetAddr, &iSize) !=	SOCKET_ERROR);
 
 
 /*
- * ndll stuff
+ * Haxe ndll stuff
  */
+
+/* Will be compatible with Neko on desktop targets. */
+#if defined(HX_WINDOWS) || defined(HX_MACOS) || defined(HX_LINUX)
+    #define NEKO_COMPATIBLE
+#endif
+
 #define IMPLEMENT_API
 #include <hx/CFFI.h>
  

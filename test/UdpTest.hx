@@ -16,7 +16,8 @@ import hxudp.UdpSocket;
 class UdpTest {
 	static function server():Void {
 		var lock:Lock = Thread.readMessage(true);
-		
+		var mainThread:Thread = Thread.readMessage(true);
+
 		var s = new UdpSocket();
 		trace("server create: " + s.create());
 		trace("server bind 11999: " + s.bind(11999));
@@ -24,6 +25,8 @@ class UdpTest {
 		trace("server getMaxMsgSize: " + s.getMaxMsgSize());
 		trace("server getReceiveBufferSize: " + s.getReceiveBufferSize());
 		
+		mainThread.sendMessage(true); //notify server is ready
+
 		var b = Bytes.alloc(80);
 		trace("server receive: " + s.receive(b));
 		trace("server receive dump:");
@@ -39,23 +42,28 @@ class UdpTest {
 			}
 			trace(str);
 		}
-		
+
 		var b = Bytes.alloc(80);
 		trace("server receive: " + s.receive(b));
 		trace("server received: " + new BytesInput(b).readUntil(0));
-		
+
 		s.close();
-		
+
 		lock.release();
 	}
-	
+
 	static public function main():Void {
+		trace("server-client test start");
+
 		//create a lock for knowing when server exit
 		var lock = new Lock();
-		
+
 		var serverThread = Thread.create(server);
 		serverThread.sendMessage(lock);
+		serverThread.sendMessage(Thread.current());
 		
+		Thread.readMessage(true);
+
 		var s = new UdpSocket();
 		trace("client create: " + s.create());
 		trace("client getSendBufferSize: " + s.getSendBufferSize());
@@ -63,9 +71,9 @@ class UdpTest {
 		trace("client send 'testing': " + s.send(Bytes.ofString("testing")));
 		trace("client sendAll 'testing2': " + s.sendAll(Bytes.ofString("testing2")));
 		trace("client close: " + s.close());
-		
+
 		//wait for server to exit
-		while (!lock.wait(100)) {
+		while (!lock.wait(1)) {
 			trace("waiting...");
 		}
 		trace("server-client test finished");
