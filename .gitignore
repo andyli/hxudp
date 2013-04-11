@@ -2,5 +2,6 @@ bin
 project/obj
 project/all_objs
 project/vc100.pdb
+hxudp.zip
 
 .DS_Store
