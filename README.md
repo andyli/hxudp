@@ -9,6 +9,7 @@ UDP socket for [Haxe](http://haxe.org/).
   * Mac (32/64bit)
   * Linux (32/64bit)
   * Android ([NME](http://www.haxenme.org/))
+  * iOS (armv6/armv7)
 
 ## Note
 
