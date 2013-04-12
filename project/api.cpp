@@ -840,7 +840,7 @@ value _UdpSocket_GetRemoteAddr(value a) {
 	char* address = new char[INET_ADDRSTRLEN];
 	s->GetRemoteAddr(address);
 	value v = alloc_string(address);
-	delete address;
+	delete[] address;
 	return v;
 }
 DEFINE_PRIM(_UdpSocket_GetRemoteAddr, 1);
