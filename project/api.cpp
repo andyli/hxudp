@@ -42,7 +42,7 @@
 	#ifndef WIN32_LEAN_AND_MEAN
 	#define WIN32_LEAN_AND_MEAN
 	#endif
-	
+
 	//windows includes
 	#include <winsock2.h>
 	#include <ws2tcpip.h>		// TCP/IP annex needed for multicasting
@@ -523,7 +523,7 @@ public:
 		if (m_hSocket == INVALID_SOCKET) return(false);
 		if ( canGetRemoteAddress ==	false) return (false);
 
-		strcpy(address,	inet_ntoa((in_addr)saClient.sin_addr));
+		inet_ntop(AF_INET, &(saClient.sin_addr), address, INET_ADDRSTRLEN);
 		return true;
 	}
 
@@ -730,15 +730,17 @@ return(getsockname(m_hSocket, (sockaddr *)pInetAddr, &iSize) !=	SOCKET_ERROR);
 /*
  * Haxe ndll stuff
  */
+#ifndef IPHONE
+#define IMPLEMENT_API
+#endif
 
 /* Will be compatible with Neko on desktop targets. */
 #if defined(HX_WINDOWS) || defined(HX_MACOS) || defined(HX_LINUX)
-    #define NEKO_COMPATIBLE
+#define NEKO_COMPATIBLE
 #endif
 
-#define IMPLEMENT_API
 #include <hx/CFFI.h>
- 
+
 DEFINE_KIND(_UdpSocket);
 
 void delete_UdpSocket(value a) {
@@ -835,9 +837,11 @@ DEFINE_PRIM(_UdpSocket_GetTimeoutReceive, 1);
 
 value _UdpSocket_GetRemoteAddr(value a) {
 	UdpSocket* s = (UdpSocket*) val_data(a);
-	char* address = "";
+	char* address = new char[INET_ADDRSTRLEN];
 	s->GetRemoteAddr(address);
-	return alloc_string(address);
+	value v = alloc_string(address);
+	delete[] address;
+	return v;
 }
 DEFINE_PRIM(_UdpSocket_GetRemoteAddr, 1);
 
@@ -900,3 +904,5 @@ value _UdpSocket_SetTTL(value a, value b) {
 	return alloc_bool(s->SetTTL(val_int(b)));
 }
 DEFINE_PRIM(_UdpSocket_SetTTL, 2);
+
+extern "C" int hxudp_register_prims () { return 0; }

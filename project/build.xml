@@ -1,9 +1,31 @@
 <xml>
 	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
-	
+
+	<set name="iphonesim" value="1" if="ios" />
+	<set name="iphoneos" value="1" if="ios" unless="simulator" />
+
+	<set name="mobile" value="1" if="iphone"/>
+	<set name="mobile" value="1" if="android"/>
+	<set name="mobile" value="1" if="webos"/>
+	<set name="mobile" value="1" if="blackberry"/>
+	<set name="mobile" value="1" if="gph"/>
+
+	<set name="tool" value="exe" unless="iphone"/>
+	<set name="tool" value="static" if="iphone"/>
+
+	<set name="IOS_ARCH" value="-v7" if="HXCPP_ARMV7" />
+
+	<set name="ndll-tool" value="dll" unless="iphone"/>
+	<set name="ndll-tool" value="static_link" if="iphone"/>
+	<set name="name_extra" value=".iphonesim" if="iphonesim"/>
+	<set name="name_extra" value=".iphoneos${IOS_ARCH}" if="iphoneos"/>
+
+	<set name="name_extra" value="-x86" if="simulator" unless="iphonesim" />
+	<set name="name_prefix" value="lib" if="iphone" />
+
 	<files id="udp_Files">
 		<file name="api.cpp"/>
-		
+
 		<compilerflag value = "-D__WIN32__" if="windows"/>
 		<compilerflag value = "-DWIN32" if="windows"/>
 		<compilerflag value = "-DNDEBUG" if="windows"/>
@@ -14,25 +36,25 @@
 		<compilerflag value = "-Wfatal-errors" if="macos"/>
 		<compilerflag value = "-W" if="macos"/>
 		<compilerflag value = "-fexceptions" if="macos"/>
-		
+
 		<compilerflag value = "-march=native" if="linux"/>
 		<compilerflag value = "-mtune=native" if="linux"/>
 		<compilerflag value = "-finline-functions" if="linux"/>
 		<compilerflag value = "-funroll-all-loops" if="linux"/>
 		<compilerflag value = "-fexceptions" if="linux"/>
 	</files>
-	
-	<target id="hxudp.ndll" tool="linker" toolid="dll" output="hxudp">
+
+	<target id="NDLL" tool="linker" toolid="${ndll-tool}" output="${name_prefix}hxudp${debug_extra}${name_extra}">
 		<files id="udp_Files"/>
-		<ext value=".ndll"/>
+		<ext value=".ndll" unless="mobile"/>
 		<outdir name="../ndll/${BINDIR}"/>
-		
+
 		<lib name="${LIB_LINK}"/>
-		
+
 		<lib name = 'ws2_32.lib' if="windows" />
 	</target>
 
 	<target id="default">
-		<target id="hxudp.ndll"/>
+		<target id="NDLL"/>
 	</target>
 </xml>
