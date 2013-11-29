@@ -1,0 +1,18 @@
+language: node_js
+
+before_script:
+  - sudo apt-get install python-software-properties -y # for the next command
+  - sudo add-apt-repository ppa:eyecreate/haxe -y
+  - sudo apt-get update
+  - sudo apt-get install haxe -y
+  - sudo apt-get install gcc-multilib g++-multilib -y  # for hxcpp
+  - mkdir ~/haxelib && haxelib setup ~/haxelib
+  - haxelib install hxcpp
+
+script:
+  - cd project
+  - haxelib run hxcpp build.xml
+  - haxelib run hxcpp build.xml -DHXCPP_M64
+  - cd ..
+  - haxelib dev hxudp .
+  - haxe -cpp bin -main UdpTest -cp src -cp test
