@@ -1,0 +1,7 @@
+<project name="hxudp" url="https://github.com/andyli/hxudp" license="MIT">
+	<user name="andyli" />
+	<tag v="neko" />
+	<tag v="cpp" />
+	<description>UDP socket for Haxe/C++</description>
+	<version name="1.0.0">Initial version</version>
+</project>
