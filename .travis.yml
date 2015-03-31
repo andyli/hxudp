@@ -8,7 +8,8 @@ install:
   - sudo apt-get install haxe -y
   - sudo apt-get install gcc-multilib g++-multilib -y  # for hxcpp
   - mkdir ~/haxelib && haxelib setup ~/haxelib
-  - haxelib install hxcpp 3.1.39
+  - haxelib install hxcpp 3.1.39 > log.txt || cat log.txt
+  - haxelib list
 
 script:
   - cd project
