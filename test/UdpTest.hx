@@ -12,49 +12,42 @@ import neko.vm.Lock;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import hxudp.UdpSocket;
+import haxe.unit.*;
 
-class UdpTest {
-	static function server():Void {
+class UdpTest extends TestCase {
+	var msg1(default, never) = "testing";
+	var msg2(default, never) = "testing2";
+
+	function server():Void {
 		var lock:Lock = Thread.readMessage(true);
 		var mainThread:Thread = Thread.readMessage(true);
 
 		var s = new UdpSocket();
-		trace("server create: " + s.create());
-		trace("server bind 11999: " + s.bind(11999));
-		trace("server setNonBlocking false: " + s.setNonBlocking(false));
-		trace("server getMaxMsgSize: " + s.getMaxMsgSize());
-		trace("server getReceiveBufferSize: " + s.getReceiveBufferSize());
+		assertTrue(s.create());
+		assertTrue(s.bind(11999));
+		assertTrue(s.setNonBlocking(false));
+		assertTrue(s.getMaxMsgSize() > 0);
+		assertTrue(s.getReceiveBufferSize() > 0);
 		
 		mainThread.sendMessage(true); //notify server is ready
 
 		var b = Bytes.alloc(80);
-		trace("server receive: " + s.receive(b));
-		trace("server receive dump:");
+		var recLen = s.receive(b);
+		assertEquals(msg1.length, recLen);
 		var input = new BytesInput(b);
-		var n = 0;
-		for (i in 0...10){
-			var str = "";
-			for (j in 0...8) {
-				var byte = input.readByte();
-				var char = String.fromCharCode(byte);
-				str += StringTools.hex(byte, 2) 
-					+ (byte >= 32 && byte < 127 ? "(" + char + ")" : "   ") + ", ";
-			}
-			trace(str);
-		}
+		assertEquals(msg1, input.readString(recLen));
 
-		var b = Bytes.alloc(80);
-		trace("server receive: " + s.receive(b));
-		trace("server received: " + new BytesInput(b).readUntil(0));
+		var recLen = s.receive(b);
+		assertEquals(msg2.length, recLen);
+		var input = new BytesInput(b);
+		assertEquals(msg2, input.readString(recLen));
 
-		s.close();
+		assertTrue(s.close());
 
 		lock.release();
 	}
 
-	static public function main():Void {
-		trace("server-client test start");
-
+	function test():Void {
 		//create a lock for knowing when server exit
 		var lock = new Lock();
 
@@ -65,17 +58,21 @@ class UdpTest {
 		Thread.readMessage(true);
 
 		var s = new UdpSocket();
-		trace("client create: " + s.create());
-		trace("client getSendBufferSize: " + s.getSendBufferSize());
-		trace("client connect: " + s.connect("127.0.0.1", 11999));
-		trace("client send 'testing': " + s.send(Bytes.ofString("testing")));
-		trace("client sendAll 'testing2': " + s.sendAll(Bytes.ofString("testing2")));
-		trace("client close: " + s.close());
+		assertTrue(s.create());
+		assertTrue(s.getSendBufferSize() > 0);
+		assertTrue(s.connect("127.0.0.1", 11999));
+		assertEquals(msg1.length, s.send(Bytes.ofString(msg1)));
+		assertEquals(msg2.length, s.sendAll(Bytes.ofString(msg2)));
+		assertTrue(s.close());
 
 		//wait for server to exit
-		while (!lock.wait(1)) {
-			trace("waiting...");
-		}
-		trace("server-client test finished");
+		while (!lock.wait(1)) {}
+	}
+
+	static public function main():Void {
+		var runner = new TestRunner();
+		runner.add(new UdpTest());
+		var success = runner.run();
+		Sys.exit(success ? 0 : 1);
 	}
 }
