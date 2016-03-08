@@ -1,20 +1,28 @@
-language: cpp
+language: haxe
+
+haxe:
+  - 3.1.3
+  - 3.2.1
+
+os:
+  - linux
+  - osx
+
+sudo: false
+addons:
+  apt:
+    packages:
+      - gcc-multilib
+      - g++-multilib
 
 install:
-  - sudo apt-get update
-  - sudo apt-get install python-software-properties -y # for the next command
-  - sudo add-apt-repository ppa:eyecreate/haxe -y
-  - sudo apt-get update
-  - sudo apt-get install haxe -y
-  - sudo apt-get install gcc-multilib g++-multilib -y  # for hxcpp
-  - mkdir ~/haxelib && haxelib setup ~/haxelib
-  - haxelib install hxcpp 3.1.39 > log.txt || cat log.txt
+  - haxelib install hxcpp
   - haxelib list
 
 script:
-  - cd project
+  - pushd project
   - haxelib run hxcpp build.xml
   - haxelib run hxcpp build.xml -DHXCPP_M64
-  - cd ..
+  - popd
   - haxelib dev hxudp .
   - haxe compile-cpp.hxml && ./bin/UdpTest
