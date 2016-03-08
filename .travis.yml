@@ -6,7 +6,7 @@ haxe:
 
 os:
   - linux
-  # - osx # The test crashes on OSX...
+  - osx
 
 sudo: false
 addons:
