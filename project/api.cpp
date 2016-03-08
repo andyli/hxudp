@@ -1,4 +1,19 @@
 /*
+ * Haxe ndll stuff
+ */
+#ifndef IPHONE
+#define IMPLEMENT_API
+#endif
+
+/* Will be compatible with Neko on desktop targets. */
+#if defined(HX_WINDOWS) || defined(HX_MACOS) || defined(HX_LINUX)
+#define NEKO_COMPATIBLE
+#endif
+
+#include <hx/CFFI.h>
+
+
+/*
  * Following is largely based on ofxUDPManager of ofxNetwork.
  * ofxNetwork is an addon of openframeworks(http://www.openframeworks.cc/)
  */
@@ -63,7 +78,7 @@ string ofToString(const T& value){
 	return out.str();
 }
 
-string ofxNetworkCheckError(){
+string ofxNetworkGetError(){
 	#ifdef TARGET_WIN32
 		int	err	= WSAGetLastError();
 	#else
@@ -138,6 +153,14 @@ string ofxNetworkCheckError(){
 	return "OK";
 }
 
+
+void ofxNetworkCheckError(){
+	string err = ofxNetworkGetError();
+	if (err != "OK") {
+		fprintf(stderr, "%s\n", err.c_str());
+		val_throw(alloc_string(err.c_str()));
+	}
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -706,19 +729,7 @@ return(getsockname(m_hSocket, (sockaddr *)pInetAddr, &iSize) !=	SOCKET_ERROR);
 
 
 
-/*
- * Haxe ndll stuff
- */
-#ifndef IPHONE
-#define IMPLEMENT_API
-#endif
 
-/* Will be compatible with Neko on desktop targets. */
-#if defined(HX_WINDOWS) || defined(HX_MACOS) || defined(HX_LINUX)
-#define NEKO_COMPATIBLE
-#endif
-
-#include <hx/CFFI.h>
 
 DEFINE_KIND(_UdpSocket);
 
